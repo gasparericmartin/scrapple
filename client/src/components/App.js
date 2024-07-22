@@ -1,8 +1,14 @@
-import React, { useEffect, useState } from "react";
-import { Switch, Route } from "react-router-dom";
+import React, { useEffect, useState } from "react"
+
 
 function App() {
-  return <h1>Project Client</h1>;
+  return (
+    <>
+      <h1 className='font-bold underline'>It's an app</h1>
+      <button class='btn btn-primary'>Button</button>    
+    </>
+  )
+
 }
 
 export default App;
