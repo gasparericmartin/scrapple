@@ -30,14 +30,13 @@ class User(db.Model, SerializerMixin):
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String, nullable=False)
+    username = db.Column(db.String(32), nullable=False, unique=True)
     #Hash this
-    password = db.Column(db.String, nullable=False)
+    password_hash = db.Column(db.String(128), nullable=False)
 
     searches = db.relationship('Search', secondary=user_searches, 
                                back_populates='users', cascade='all, delete-orphan')
     comments = db.relationship('Comment', back_populates='user', cascade='all, delete-orphan')
-
 
 
 class Search(db.Model, SerializerMixin):
