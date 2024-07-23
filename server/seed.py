@@ -53,7 +53,20 @@ def create_comments():
     return comments
 
 def create_posts():
-    pass
+    posts = []
+
+    for x in range(100):
+        post = Post(
+            reddit_id = fake.aba(),
+            created = fake.date_time_this_decade(),
+            title = fake.job(),
+            url = fake.url(),
+            img_url = fake.image_url(),
+            body = fake.paragraph(3, False)
+        )
+        posts.append(post)
+        
+    return posts
 
 if __name__ == '__main__':
     fake = Faker()
@@ -84,5 +97,12 @@ if __name__ == '__main__':
         comments = create_comments()
         db.session.add_all(comments)
         db.session.commit()
+
+        print('Seeding posts...')
+        posts = create_posts()
+        db.session.add_all(posts)
+        db.session.commit()
+
+        print('Seed complete')
         
 
