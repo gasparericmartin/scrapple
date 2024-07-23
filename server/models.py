@@ -34,6 +34,8 @@ class Post(db.Model, SerializerMixin):
     img_url = db.Column(db.String)
     body = db.Column(db.String)
 
+    searches = db.relationship('Search', secondary=search_posts, back_populates='posts')
+
 class User(db.Model, SerializerMixin):
     __tablename__ = 'users'
 
@@ -41,8 +43,7 @@ class User(db.Model, SerializerMixin):
     username = db.Column(db.String(32), nullable=False, unique=True)
     _password_hash = db.Column(db.String(128), nullable=False)
 
-    searches = db.relationship('Search', secondary=user_searches, 
-                               back_populates='users')
+    searches = db.relationship('Search', secondary=user_searches, back_populates='users')
     comments = db.relationship('Comment', back_populates='user', cascade='all, delete-orphan')
 
     def __repr__(self):
@@ -91,10 +92,9 @@ class Search(db.Model, SerializerMixin):
     
     origin_user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
 
-    users = db.relationship('User', secondary=user_searches,
-                            back_populates='searches')
-
-    comments = db.relationship('Comment', back_populates='search', cascade='all, delete-orphan')    
+    users = db.relationship('User', secondary=user_searches,back_populates='searches')
+    comments = db.relationship('Comment', back_populates='search', cascade='all, delete-orphan')
+    posts = db.relationship('Post', secondary=search_posts, back_populates='searches')    
 
 class Comment(db.Model, SerializerMixin):
     __tablename__ = 'comments'
