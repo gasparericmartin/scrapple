@@ -36,6 +36,9 @@ class Post(db.Model, SerializerMixin):
 
     searches = db.relationship('Search', secondary=search_posts, back_populates='posts')
 
+    def __repr__(self):
+        return f'<ID:{self.id}, REDDIT_ID:{self.reddit_id}, TITLE:{self.title}>'
+
 class User(db.Model, SerializerMixin):
     __tablename__ = 'users'
 
@@ -47,7 +50,7 @@ class User(db.Model, SerializerMixin):
     comments = db.relationship('Comment', back_populates='user', cascade='all, delete-orphan')
 
     def __repr__(self):
-        pass
+        return f'<ID:{self.id}, USERNAME:{self.username}>'
 
     @hybrid_property
     def password_hash(self):
@@ -92,9 +95,12 @@ class Search(db.Model, SerializerMixin):
     
     origin_user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
 
-    users = db.relationship('User', secondary=user_searches,back_populates='searches')
+    users = db.relationship('User', secondary=user_searches, back_populates='searches')
     comments = db.relationship('Comment', back_populates='search', cascade='all, delete-orphan')
-    posts = db.relationship('Post', secondary=search_posts, back_populates='searches')    
+    posts = db.relationship('Post', secondary=search_posts, back_populates='searches') 
+
+    def __repr__(self):
+        return f'ID:{self.id}, TITLE:{self.title}, SEARCH_TERMS:{self.search_terms}'   
 
 class Comment(db.Model, SerializerMixin):
     __tablename__ = 'comments'
@@ -108,6 +114,8 @@ class Comment(db.Model, SerializerMixin):
     search = db.relationship('Search', back_populates='comments')
     user = db.relationship('User', back_populates='comments')
 
+    def __repr__(self):
+        return f'ID:{self.id}, BODY:{self.body[:15]}'
 
 
 
