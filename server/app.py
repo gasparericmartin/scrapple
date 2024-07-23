@@ -5,6 +5,7 @@ from scraper import *
 from flask import request, session
 from flask_restful import Resource
 from config import app, db, api
+from sqlalchemy import func
 import datetime
 
 class Home(Resource):
@@ -16,7 +17,25 @@ class Signup(Resource):
         pass
 
     def post(self):
-        pass
+        check = User.query.filter(func.lower(User.username)
+                    == func.lower('JohnDoe')).first()
+        
+        if not check:
+            try:
+                new_user = User(
+                    username = request.json['username'],
+                    password = request.json['password']
+                )
+                
+                db.session.add(new_user)
+                db.session.commit()
+
+                return new_user.to_dict(), 201
+
+            except Exception as exc:
+                return {'error': f'{exc}'}, 400
+        
+        return {'error': 'Username already exists'}
 
 class Login(Resource):
     def get(self):
