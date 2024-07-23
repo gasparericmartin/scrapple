@@ -35,13 +35,22 @@ def create_searches():
             search_terms = f'{rc(search_terms)}+{rc(search_terms)}',
             origin_user_id = randint(1, 20)
         )
-
         searches.append(search)
 
     return searches
 
 def create_comments():
-    pass
+    comments = []
+
+    for x in range(20):
+        comment = Comment(
+            body = fake.paragraph(3, False),
+            search_id = randint(1, 20),
+            user_id = randint(1, 20)
+        )
+        comments.append(comment)
+    
+    return comments
 
 def create_posts():
     pass
@@ -70,5 +79,10 @@ if __name__ == '__main__':
             user = User.query.filter_by(id=randint(1,20)).first()
             search.users.append(user)
             db.session.commit()    
+        
+        print('Seeding comments...')
+        comments = create_comments()
+        db.session.add_all(comments)
+        db.session.commit()
         
 
