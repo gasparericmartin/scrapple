@@ -18,6 +18,11 @@ user_searches = db.Table('user_searches',
                         db.Column('search_id', db.Integer, db.ForeignKey('searches.id'))
                         )
 
+search_posts = db.Table('search_posts',
+                        db.Column('search_id', db.Integer, db.ForeignKey('searches.id')),
+                        db.Column('post_id', db.Integer, db.ForeignKey('posts.id'))
+                        )
+
 class Post(db.Model, SerializerMixin):
     __tablename__ = 'posts'
 
