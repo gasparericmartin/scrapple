@@ -1,6 +1,9 @@
 from sqlalchemy_serializer import SerializerMixin
 from sqlalchemy.ext.associationproxy import association_proxy
-from config import db
+from sqlalchemy.ext.hybrid import hybrid_property
+import os
+import hashlib
+from config import db, metadata
 
 convention = {
     "ix": "ix_%(column_0_label)s",
@@ -11,8 +14,8 @@ convention = {
 }
 
 user_searches = db.Table('user_searches',
-                        db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
-                        db.Column('search_id', db.Integer, db.ForeignKey('tag.id'))
+                        db.Column('user_id', db.Integer, db.ForeignKey('users.id')),
+                        db.Column('search_id', db.Integer, db.ForeignKey('searches.id'))
                         )
 
 class Post(db.Model, SerializerMixin):
@@ -31,12 +34,47 @@ class User(db.Model, SerializerMixin):
 
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(32), nullable=False, unique=True)
-    #Hash this
-    password_hash = db.Column(db.String(128), nullable=False)
+    _password_hash = db.Column(db.String(128), nullable=False)
 
     searches = db.relationship('Search', secondary=user_searches, 
-                               back_populates='users', cascade='all, delete-orphan')
+                               back_populates='users')
     comments = db.relationship('Comment', back_populates='user', cascade='all, delete-orphan')
+
+    def __repr__(self):
+        pass
+
+    @hybrid_property
+    def password_hash(self):
+        return self._password_hash
+    
+    @password_hash.setter
+    def password_hash(self, password):
+        salt = os.urandom(16)
+
+        hash_value = hashlib.pbkdf2_hmac(
+            'sha256',
+            password.encode('utf-8'),
+            salt,
+            10000
+        )
+
+        self._password_hash = salt + hash_value
+    
+    def authenticate(self, password):
+        salt = self.password_hash[:16]
+        key = self.password_hash[16:]
+
+        password_hash = hashlib.pbkdf2_hmac(
+            'sha256',
+            password.encode('utf-8'),
+            salt,
+            10000
+        )
+    
+        if password_hash == key:
+            return True
+        else:
+            return False
 
 
 class Search(db.Model, SerializerMixin):
@@ -49,7 +87,7 @@ class Search(db.Model, SerializerMixin):
     origin_user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
 
     users = db.relationship('User', secondary=user_searches,
-                            back_populates='searches', cascade='all, delete-orphan')
+                            back_populates='searches')
 
     comments = db.relationship('Comment', back_populates='search', cascade='all, delete-orphan')    
 
