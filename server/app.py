@@ -5,6 +5,7 @@ from scraper import *
 from flask import request, session
 from flask_restful import Resource
 from config import app, db, api, login_manager
+from flask_login import login_required, current_user,login_user ,logout_user
 from sqlalchemy import func
 import datetime
 
@@ -56,11 +57,36 @@ class Signup(Resource):
         return {'error': 'Username already exists'}, 400
 
 class Login(Resource):
-    def get(self):
-        pass
+    def post(self, id):
+        user = User.query.filter_by(id=id).first()
 
-    def post(self):
-        pass
+        try:
+            if user:
+                if user.authenticate(request.json['password']):
+                    user.authenticated = True
+                    db.session.add(user)
+                    db.session.commit()
+                    login_user(user, remember=True)
+
+                    return user.to_dict(), 200
+        
+        except Exception as exc:
+            return {'error': exc}, 400
+
+class Logout(Resource):
+    @login_required
+    def get(self):
+        try:
+            user = current_user
+            user.authenticated = False
+            db.session.add(user)
+            db.session.commit()
+            logout_user()
+
+            return {'message': 'Logout successful'}, 200
+        except Exception as exc:
+            return {'error': f'{exc}'}, 400
+        
 
 class CheckSession(Resource):
     def get(self):
@@ -71,6 +97,7 @@ class CheckSession(Resource):
             return {'message': '401: Not Authorized'}, 401
 
 class PostsBySearchId(Resource):
+    @login_required
     def get(self, id):
         search = Search.query.filter_by(id=id).first()
         if search:
@@ -81,7 +108,8 @@ class PostsBySearchId(Resource):
 
 api.add_resource(Home, '/')
 api.add_resource(Signup, '/signup')
-api.add_resource(Login, '/login')
+api.add_resource(Login, '/login/<int:id>')
+api.add_resource(Logout, '/logout')
 api.add_resource(PostsBySearchId, '/posts/<int:id>')
 
 
