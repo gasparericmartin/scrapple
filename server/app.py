@@ -8,6 +8,7 @@ from config import app, db, api, login_manager
 from flask_login import login_required, current_user,login_user ,logout_user
 from sqlalchemy import func
 import datetime
+import sys
 
 @login_manager.user_loader
 def user_loader(user_id):
@@ -18,16 +19,8 @@ def user_loader(user_id):
     else:
         return
 
-@login_manager.request_loader
-def request_loader(request):
-    user = User.query.filter_by(id=request.json['id']).first()
-
-    if user:
-        return user
-    else:
-        return
-
 class Home(Resource):
+    @login_required
     def get(self):
         return '<h1>Scrapple</h1>'
     
@@ -37,7 +30,7 @@ class Signup(Resource):
 
     def post(self):
         check = User.query.filter(func.lower(User.username)
-                    == func.lower('JohnDoe')).first()
+                    == func.lower(request.json['username'])).first()
         
         if not check:
             try:
@@ -49,7 +42,7 @@ class Signup(Resource):
                 db.session.add(new_user)
                 db.session.commit()
 
-                return new_user.to_dict(), 201
+                return new_user.to_dict(rules=('-password_hash',)), 201
 
             except Exception as exc:
                 return {'error': f'{exc}'}, 400
@@ -57,18 +50,14 @@ class Signup(Resource):
         return {'error': 'Username already exists'}, 400
 
 class Login(Resource):
-    def post(self, id):
-        user = User.query.filter_by(id=id).first()
+    def post(self):
+        user = User.query.filter_by(username=request.json['username']).first()
 
         try:
-            if user:
-                if user.authenticate(request.json['password']):
-                    user.authenticated = True
-                    db.session.add(user)
-                    db.session.commit()
-                    login_user(user, remember=True)
+            if user and user.authenticate(request.json['password']):
+                login_user(user, remember=True)
 
-                    return user.to_dict(), 200
+                return user.to_dict(), 200
         
         except Exception as exc:
             return {'error': exc}, 400
@@ -77,13 +66,10 @@ class Logout(Resource):
     @login_required
     def get(self):
         try:
-            user = current_user
-            user.authenticated = False
-            db.session.add(user)
-            db.session.commit()
             logout_user()
 
             return {'message': 'Logout successful'}, 200
+        
         except Exception as exc:
             return {'error': f'{exc}'}, 400
         
@@ -92,7 +78,7 @@ class CheckSession(Resource):
     def get(self):
         user = User.query.filter(User.id == session.get('user_id')).first()
         if user:
-            return user.to_dict()
+            return user.to_dict(rules=('-password_hash',))
         else:
             return {'message': '401: Not Authorized'}, 401
 
@@ -106,9 +92,9 @@ class PostsBySearchId(Resource):
 
         return {'errir': '404 not found'}, 404 
 
-api.add_resource(Home, '/')
+api.add_resource(Home, '/home')
 api.add_resource(Signup, '/signup')
-api.add_resource(Login, '/login/<int:id>')
+api.add_resource(Login, '/login')
 api.add_resource(Logout, '/logout')
 api.add_resource(PostsBySearchId, '/posts/<int:id>')
 
