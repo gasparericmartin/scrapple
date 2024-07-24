@@ -7,6 +7,7 @@ from flask_migrate import Migrate
 from flask_restful import Api
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import MetaData
+import flask_login
 
 # Local imports
 
@@ -29,3 +30,7 @@ api = Api(app)
 
 # Instantiate CORS
 CORS(app)
+
+# Flask Login
+login_manager = flask_login.LoginManager()
+login_manager.init_app(app)
