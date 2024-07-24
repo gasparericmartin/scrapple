@@ -90,13 +90,38 @@ class PostsBySearchId(Resource):
             posts = [post.to_dict() for post in Search.posts]
             return posts, 200
 
-        return {'errir': '404 not found'}, 404 
+        return {'error': '404 not found'}, 404
+
+class Searches (Resource):
+    @login_required
+    def get(self):
+        searches = Search.query.all()
+
+        if searches:
+            searches_dict = [search.to_dict() for search in searches]
+            return searches_dict, 200
+        
+        return {'Error': '404 not found'}, 404
+
+class SearchesByUser(Resource):
+    @login_required
+    def get(self):
+        searches = [search.to_dict() for search in current_user.searches]
+
+        try:
+            if searches:
+                return searches, 200
+            return {'Error': 'No searches found'}, 404
+        except Exception as exc:
+            return {'Error': exc}, 400
 
 api.add_resource(Home, '/home')
 api.add_resource(Signup, '/signup')
 api.add_resource(Login, '/login')
 api.add_resource(Logout, '/logout')
 api.add_resource(PostsBySearchId, '/posts/<int:id>')
+api.add_resource(Searches, '/searches')
+api.add_resource(SearchesByUser, '/searches-by-user')
 
 
 if __name__ == '__main__':
