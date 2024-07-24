@@ -76,9 +76,8 @@ class Logout(Resource):
 
 class CheckSession(Resource):
     def get(self):
-        user = User.query.filter(User.id == session.get('user_id')).first()
-        if user:
-            return user.to_dict(rules=('-password_hash',))
+        if current_user:
+            return current_user.to_dict(), 200
         else:
             return {'message': '401: Not Authorized'}, 401
 
