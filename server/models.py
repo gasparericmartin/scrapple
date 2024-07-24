@@ -110,6 +110,12 @@ class User(db.Model, SerializerMixin):
 class Search(db.Model, SerializerMixin):
     __tablename__ = 'searches'
 
+    serialize_rules = (
+        '-users.searches',
+        '-comments.search',
+        '-posts.searches'
+        )
+
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String, nullable=False)
     search_terms = db.Column(db.String, nullable=False)
