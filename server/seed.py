@@ -17,7 +17,7 @@ def create_users():
     for x in range(20):
         user = User(
             username = usernames[x],
-            password_hash = 'password'
+            password = 'password'
         )
 
         users.append(user)
@@ -65,7 +65,7 @@ def create_posts():
             body = fake.paragraph(3, False)
         )
         posts.append(post)
-        
+
     return posts
 
 if __name__ == '__main__':
