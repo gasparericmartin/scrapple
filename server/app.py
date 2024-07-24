@@ -4,9 +4,27 @@ from models import *
 from scraper import *
 from flask import request, session
 from flask_restful import Resource
-from config import app, db, api
+from config import app, db, api, login_manager
 from sqlalchemy import func
 import datetime
+
+@login_manager.user_loader
+def user_loader(user_id):
+    user = User.query.filter_by(id=user_id).first()
+
+    if user:
+        return user
+    else:
+        return
+
+@login_manager.request_loader
+def request_loader(request):
+    user = User.query.filter_by(id=request.json['id']).first()
+
+    if user:
+        return user
+    else:
+        return
 
 class Home(Resource):
     def get(self):
@@ -35,7 +53,7 @@ class Signup(Resource):
             except Exception as exc:
                 return {'error': f'{exc}'}, 400
         
-        return {'error': 'Username already exists'}
+        return {'error': 'Username already exists'}, 400
 
 class Login(Resource):
     def get(self):
