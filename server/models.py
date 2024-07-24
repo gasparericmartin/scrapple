@@ -42,11 +42,19 @@ class Post(db.Model, SerializerMixin):
 class User(db.Model, SerializerMixin):
     __tablename__ = 'users'
 
+    serialize_rules = (
+        '-password_hash', 
+        '-searches.users', 
+        '-searches.comments', 
+        '-comments.user', 
+        '-comments.search')
+
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(32), nullable=False, unique=True)
-    _password_hash = db.Column(db.String(128), nullable=False)
-    authenticated = db.Column(db.Boolean, defualt=False)
+    password_hash = db.Column(db.String(128), nullable=False)
+    authenticated = db.Column(db.Boolean, default=False)
 
+    #Add created searches relationship using search property origin_user_id
     searches = db.relationship('Search', secondary=user_searches, back_populates='users')
     comments = db.relationship('Comment', back_populates='user', cascade='all, delete-orphan')
 
@@ -55,7 +63,7 @@ class User(db.Model, SerializerMixin):
 
     @hybrid_property
     def password(self):
-        return self._password_hash
+        return self.password_hash
     
     @password.setter
     def password(self, password):
@@ -68,7 +76,7 @@ class User(db.Model, SerializerMixin):
             10000
         )
 
-        self._password_hash = salt + hash_value
+        self.password_hash = salt + hash_value
     
     def authenticate(self, password):
         salt = self.password_hash[:16]
