@@ -3,7 +3,7 @@ from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy.ext.hybrid import hybrid_property
 import os
 import hashlib
-from config import db, metadata
+from config import db, login_manager
 
 convention = {
     "ix": "ix_%(column_0_label)s",
@@ -45,6 +45,7 @@ class User(db.Model, SerializerMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(32), nullable=False, unique=True)
     _password_hash = db.Column(db.String(128), nullable=False)
+    authenticated = db.Column(db.Boolean, defualt=False)
 
     searches = db.relationship('Search', secondary=user_searches, back_populates='users')
     comments = db.relationship('Comment', back_populates='user', cascade='all, delete-orphan')
@@ -53,11 +54,11 @@ class User(db.Model, SerializerMixin):
         return f'<ID:{self.id}, USERNAME:{self.username}>'
 
     @hybrid_property
-    def password_hash(self):
+    def password(self):
         return self._password_hash
     
-    @password_hash.setter
-    def password_hash(self, password):
+    @password.setter
+    def password(self, password):
         salt = os.urandom(16)
 
         hash_value = hashlib.pbkdf2_hmac(
@@ -84,6 +85,18 @@ class User(db.Model, SerializerMixin):
             return True
         else:
             return False
+    
+    def is_active(self):
+        return True
+    
+    def get_id(self):
+        return self.id
+    
+    def is_authenticated(self):
+        return self.authenticated
+    
+    def is_anonymous(self):
+        return False
 
 
 class Search(db.Model, SerializerMixin):
