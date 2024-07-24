@@ -26,6 +26,10 @@ search_posts = db.Table('search_posts',
 class Post(db.Model, SerializerMixin):
     __tablename__ = 'posts'
 
+    serialize_rules = (
+        '-searches.posts'
+    )
+
     id = db.Column(db.Integer, primary_key=True)
     reddit_id = db.Column(db.String, nullable=False)
     created = db.Column(db.DateTime, nullable=False)
@@ -131,6 +135,12 @@ class Search(db.Model, SerializerMixin):
 
 class Comment(db.Model, SerializerMixin):
     __tablename__ = 'comments'
+
+    serialize_rules = (
+        '-search.comments',
+        '-user.comments',
+        '-user.searches.comments'
+    )
 
     id = db.Column(db.Integer, primary_key=True)
     body = db.Column(db.String, nullable=False)
