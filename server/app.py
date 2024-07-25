@@ -52,15 +52,32 @@ class Signup(Resource):
 class Login(Resource):
     def post(self):
         user = User.query.filter_by(username=request.json['username']).first()
+        authenticated = False
+
+        if user:
+            authenticated = user.authenticate(request.json['password'])
 
         try:
-            if user and user.authenticate(request.json['password']):
+            if not user:
+                return {'error': 'User not found'}, 404
+                  
+            # elif user and authenticated and current_user.id != user.id:
+            elif user and authenticated:
                 login_user(user, remember=True)
 
                 return user.to_dict(), 200
-        
+            
+            elif isinstance(current_user._get_current_object(), User) \
+            and current_user.id == user.id:
+                
+                return {'error': 'Already logged in'}, 400
+            
+            else:
+
+                return {'error': 'Not logged in'}, 400
+            
         except Exception as exc:
-            return {'error': exc}, 400
+            return {'error': f'{exc}'}, 400
 
 class Logout(Resource):
     @login_required
@@ -76,7 +93,8 @@ class Logout(Resource):
 
 class CheckSession(Resource):
     def get(self):
-        if current_user:
+        breakpoint()
+        if isinstance(current_user._get_current_object(), User):
             return current_user.to_dict(), 200
         else:
             return {'message': '401: Not Authorized'}, 401
@@ -118,6 +136,7 @@ api.add_resource(Home, '/home')
 api.add_resource(Signup, '/signup')
 api.add_resource(Login, '/login')
 api.add_resource(Logout, '/logout')
+api.add_resource(CheckSession, '/checksession')
 api.add_resource(PostsBySearchId, '/posts/<int:id>')
 api.add_resource(Searches, '/searches')
 api.add_resource(SearchesByUser, '/searches-by-user')

@@ -3,11 +3,11 @@ import { useOutletContext, useNavigate } from 'react-router-dom'
 import {Formik, Form, Field} from 'formik'
 import * as Yup from 'yup'
 
-function Login() {
+function Signup() {
     const {isLoggedIn, setIsLoggedIn} = useOutletContext()
     const [error, setError] = useState(false)
     const navigate = useNavigate()
-
+    
     function handleSubmit(values) {
         
         const postObj = {
@@ -15,7 +15,7 @@ function Login() {
             password: values.password
         }
         
-        fetch('/login', {
+        fetch('/signup', {
             method: 'POST',
             headers: {
                 'content-type': 'application/json'
@@ -24,8 +24,8 @@ function Login() {
         })
         .then(r => {
             if(r.ok) {
-                setIsLoggedIn(true)
-                navigate('/')
+                console.log('Signup Success')
+                navigate('/login')
             }
             else {
                 r.json()
@@ -37,7 +37,7 @@ function Login() {
     
     return (
         <>
-            <h1 className='text-2xl font-bold text-center'>Login</h1>
+            <h1 className='text-2xl font-bold text-center'>Signup</h1>
             <Formik
                 validateOnChange={false}
                 validateOnBlur={false}
@@ -82,4 +82,4 @@ function Login() {
     )
 }
 
-export default Login
+export default Signup
