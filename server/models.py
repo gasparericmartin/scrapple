@@ -27,7 +27,7 @@ class Post(db.Model, SerializerMixin):
     __tablename__ = 'posts'
 
     serialize_rules = (
-        '-searches.posts'
+        '-searches.posts',
     )
 
     id = db.Column(db.Integer, primary_key=True)
@@ -49,7 +49,8 @@ class User(db.Model, SerializerMixin):
     serialize_rules = (
         '-password_hash', 
         '-searches.users', 
-        '-searches.comments', 
+        '-searches.comments',
+        '' 
         '-comments.user', 
         '-comments.search')
 

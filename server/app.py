@@ -98,12 +98,20 @@ class CheckSession(Resource):
         else:
             return {'message': '401: Not Authorized'}, 401
 
-class PostsBySearchId(Resource):
+class PostsBySearchIds(Resource):
     @login_required
-    def get(self, id):
-        search = Search.query.filter_by(id=id).first()
-        if search:
-            posts = [post.to_dict() for post in Search.posts]
+    def get(self):
+        ##Avoid this complexity by creating Post-User relationship
+        #through Search
+        # search_ids = [id for id in request.json['searchids']]
+        search_ids = [search.id for search in current_user.searches]
+        searches = [Search.query.filter_by(id=search_id).first() for search_id in search_ids]
+        
+        if searches:
+            posts = []
+            for search in searches:
+                [posts.append(post.to_dict()) for post in search.posts if post.to_dict() not in posts]
+
             return posts, 200
 
         return {'error': '404 not found'}, 404
@@ -136,7 +144,7 @@ api.add_resource(Signup, '/signup')
 api.add_resource(Login, '/login')
 api.add_resource(Logout, '/logout')
 api.add_resource(CheckSession, '/checksession')
-api.add_resource(PostsBySearchId, '/posts/<int:id>')
+api.add_resource(PostsBySearchIds, '/posts')
 api.add_resource(Searches, '/searches')
 api.add_resource(SearchesByUser, '/searches-by-user')
 

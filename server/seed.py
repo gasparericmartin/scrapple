@@ -68,6 +68,14 @@ def create_posts():
 
     return posts
 
+def create_search_post_entries():
+    searches = Search.query.all()
+    posts = Post.query.all()
+
+    for x in range(100):
+        rc(searches).posts.append(rc(posts))
+        
+
 if __name__ == '__main__':
     fake = Faker()
     with app.app_context():
@@ -101,6 +109,10 @@ if __name__ == '__main__':
         print('Seeding posts...')
         posts = create_posts()
         db.session.add_all(posts)
+        db.session.commit()
+
+        print('Seeding search_posts...')
+        create_search_post_entries()
         db.session.commit()
 
         print('Seed complete')
