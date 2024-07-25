@@ -69,7 +69,7 @@ function Signup() {
                         <label htmlFor='password'>Password</label>
                         <Field 
                             name='password'
-                            type='text'
+                            type='password'
                             className='input input-bordered w-full max-w-xs'/>
                         {errors.password ? <p>{errors.password}</p>: null}
 
