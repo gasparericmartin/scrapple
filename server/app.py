@@ -51,8 +51,10 @@ class Signup(Resource):
 
 class Login(Resource):
     def post(self):
-        user = User.query.filter_by(username=request.json['username']).first()
+        user = User.query.filter(func.lower(User.username)
+                    == func.lower(request.json['username'])).first()
         authenticated = False
+        logged_in = isinstance(current_user._get_current_object(), User)
 
         if user:
             authenticated = user.authenticate(request.json['password'])
@@ -61,14 +63,12 @@ class Login(Resource):
             if not user:
                 return {'error': 'User not found'}, 404
                   
-            # elif user and authenticated and current_user.id != user.id:
-            elif user and authenticated:
+            elif user and authenticated and not logged_in:
                 login_user(user, remember=True)
 
                 return user.to_dict(), 200
             
-            elif isinstance(current_user._get_current_object(), User) \
-            and current_user.id == user.id:
+            elif logged_in and current_user.id == user.id:
                 
                 return {'error': 'Already logged in'}, 400
             
@@ -93,7 +93,6 @@ class Logout(Resource):
 
 class CheckSession(Resource):
     def get(self):
-        breakpoint()
         if isinstance(current_user._get_current_object(), User):
             return current_user.to_dict(), 200
         else:
@@ -130,7 +129,7 @@ class SearchesByUser(Resource):
                 return searches, 200
             return {'Error': 'No searches found'}, 404
         except Exception as exc:
-            return {'Error': exc}, 400
+            return {'Error': f'{exc}'}, 400
 
 api.add_resource(Home, '/home')
 api.add_resource(Signup, '/signup')
