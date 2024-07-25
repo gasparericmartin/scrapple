@@ -25,15 +25,16 @@ function Dashboard() {
         
     }, [])
 
-
+    
 
     if(isLoggedIn){
         return(
             <>
-                <h1>Welcome User</h1>
+                <h1>Welcome {user.username}</h1>
                 {userSearches ? 
                 userSearches.map((search) => <SearchCard search={search} key={search.id}/>)
                 : <h1>Loading searches</h1>}
+                
                 {posts ?
                 posts.map((post) => <PostCard key={post.id} post={post} />)
                 : <h1>Loading posts</h1>}
