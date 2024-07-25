@@ -7,6 +7,7 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [user, setUser] = useState({})
   
+  console.log('App pre')
   useEffect(() => {
     fetch('/checksession')
     .then(r => {
@@ -17,6 +18,8 @@ function App() {
       }
     })
   }, [])
+
+  console.log('App Render')
   
   return (
     <>
@@ -24,7 +27,7 @@ function App() {
               setIsLoggedIn={setIsLoggedIn}
               user={user}
               setUser={setUser}/>
-      <Outlet context={{isLoggedIn, setIsLoggedIn}}/>  
+      <Outlet context={{isLoggedIn, setIsLoggedIn, user}}/>  
     </>
   )
 

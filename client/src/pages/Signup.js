@@ -4,7 +4,7 @@ import {Formik, Form, Field} from 'formik'
 import * as Yup from 'yup'
 
 function Signup() {
-    const {isLoggedIn, setIsLoggedIn} = useOutletContext()
+    const {isLoggedIn, setIsLoggedIn, user} = useOutletContext()
     const [error, setError] = useState(false)
     const navigate = useNavigate()
     

@@ -4,7 +4,7 @@ import {Formik, Form, Field} from 'formik'
 import * as Yup from 'yup'
 
 function Login() {
-    const {isLoggedIn, setIsLoggedIn} = useOutletContext()
+    const {isLoggedIn, setIsLoggedIn, user} = useOutletContext()
     const [error, setError] = useState(false)
     const navigate = useNavigate()
 
@@ -25,7 +25,7 @@ function Login() {
         .then(r => {
             if(r.ok) {
                 setIsLoggedIn(true)
-                navigate('/')
+                navigate('/dashboard')
             }
             else {
                 r.json()
@@ -34,7 +34,7 @@ function Login() {
         })
     }
     
-    
+
     return (
         <>
             <h1 className='text-2xl font-bold text-center'>Login</h1>
@@ -80,6 +80,7 @@ function Login() {
             </Formik>
         </>
     )
+
 }
 
 export default Login

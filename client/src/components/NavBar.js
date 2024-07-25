@@ -16,6 +16,8 @@ function NavBar({isLoggedIn, setIsLoggedIn, user, setUser}) {
         })
     }
 
+    console.log(`NavBar: ${isLoggedIn}`)
+
     return (
         <div className="navbar bg-base-100">
             <div className="navbar-start">
@@ -39,7 +41,7 @@ function NavBar({isLoggedIn, setIsLoggedIn, user, setUser}) {
                     className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow">
                     {isLoggedIn ?
                     <>
-                        <li><a href='/'>Dashboard</a></li>
+                        <li><a href='/dashboard'>Dashboard</a></li>
                         <li><a>Searches</a></li>
                         <li><a>About</a></li>
                     </>
