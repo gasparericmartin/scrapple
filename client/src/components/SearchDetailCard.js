@@ -36,17 +36,34 @@ function SearchDetailCard({
                         }
                     })
                     setSearches(new_searches)
-
-                    
             }
-
-            
-                
-            
             else {
                 r.json().then((errorObj) => setError(errorObj.error))
             }
         })
+    }
+
+    function handleCommentEdit(comment, values) {
+        const postObj = {
+            body: values.comment
+        }
+        fetch(`/comments/${comment.id}`, {
+            method: 'PATCH',
+            headers: {
+                'content-type': 'application/json'
+            },
+            body: JSON.stringify(postObj)
+        })
+        .then(r => {
+            if(r.ok){
+            console.log('did it')    
+            
+            }
+            
+        })
+        
+
+        
     }
     
     return (
@@ -63,7 +80,8 @@ function SearchDetailCard({
                                                         key={comment.id} 
                                                         comment={comment} 
                                                         user={user}
-                                                        handleCommentDelete={handleCommentDelete}/>)}
+                                                        handleCommentDelete={handleCommentDelete}
+                                                        handleCommentEdit={handleCommentEdit}/>)}
             </ul> 
             <button className='btn btn-sm'
             onClick={() => setShowCommentForm(!showCommentForm)}>Add Comment
