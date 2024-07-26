@@ -127,6 +127,27 @@ class Searches (Resource):
             return searches_dict, 200
         
         return {'Error': '404 not found'}, 404
+    
+    @login_required
+    def post(self):
+        user = User.query.filter_by(id=request.json['user_id']).first()
+        try:
+            new_search = Search(
+                title = request.json['title'],
+                search_terms = request.json['search_terms'],
+                origin_user_id = request.json['user_id']
+            )
+
+            db.session.add(new_search)
+            db.session.commit()
+
+            new_search.users.append(user)
+            db.session.commit()
+
+            return new_search.to_dict(), 201
+        
+        except Exception as exc:
+            return {'error': f'{exc}'}, 400
 
 class SearchesByUser(Resource):
     @login_required
@@ -192,11 +213,12 @@ class Scrape(Resource):
             db.session.commit()
             
             new_posts_dict = [post.to_dict() for post in new_posts]
+     
             
             if len(new_posts_dict) == 0:
                 return {'message': 'No new posts'}, 204
             
-            return new_posts_dict, 200    
+            return {'posts': new_posts_dict, 'search': search.to_dict()}, 200    
     
 
 

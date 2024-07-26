@@ -9,6 +9,7 @@ function NavBar({isLoggedIn, setIsLoggedIn, user, setUser}) {
             if(r.ok) {
                 setUser({})
                 setIsLoggedIn(false)
+                navigate('/login')
             }
             else{
                 r.json().then((data) => console.log(data.error))
