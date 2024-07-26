@@ -179,6 +179,40 @@ class Comments(Resource):
         
         except Exception as exc:
             pass
+    
+class CommentById(Resource):
+    @login_required
+    def patch(self, id):
+        comment = Comment.query.filter_by(id=id).first()
+
+        if comment:
+            try:
+                for attr in request.json:
+                    setattr(comment, attr, request.json[attr])
+                
+                db.session.add(comment)
+                db.session.commit()
+
+                return comment.to_dict(), 202
+            except Exception as exc:
+                return {'error': f'{exc}'}
+        return {'error': '404 not found'}, 404
+    
+    @login_required
+    def delete(self, id):
+        comment = Comment.query.filter_by(id=id).first()
+
+        if comment:
+            try:
+               db.session.delete(comment)
+               db.session.commit()
+
+               return [], 204
+           
+            except Exception as exc:
+                return {'error': f'{exc}'}, 400
+
+        return {'error': '404 not found'}, 404 
 
 class Scrape(Resource):
     @login_required
@@ -231,6 +265,7 @@ api.add_resource(PostsBySearchIds, '/posts')
 api.add_resource(Searches, '/searches')
 api.add_resource(SearchesByUser, '/searches-by-user')
 api.add_resource(Comments, '/comments')
+api.add_resource(CommentById, '/comments/<int:id>')
 api.add_resource(Scrape, '/scrape')
 
 
