@@ -27,7 +27,10 @@ function App() {
               setIsLoggedIn={setIsLoggedIn}
               user={user}
               setUser={setUser}/>
-      <Outlet context={{isLoggedIn, setIsLoggedIn, user}}/>  
+      <Outlet context={{isLoggedIn, 
+              setIsLoggedIn, 
+              user,
+              setUser}}/>  
     </>
   )
 

@@ -46,7 +46,7 @@ function NavBar({isLoggedIn, setIsLoggedIn, user, setUser}) {
                     </>
                     :
                     <>
-                    <li><a href='/'>Signup</a></li>
+                    <li><a href='/signup'>Signup</a></li>
                     <li><a>About</a></li>
                     </>
                     }

@@ -4,7 +4,7 @@ import {Formik, Form, Field} from 'formik'
 import * as Yup from 'yup'
 
 function Login() {
-    const {isLoggedIn, setIsLoggedIn, user} = useOutletContext()
+    const {isLoggedIn, setIsLoggedIn, user, setUser} = useOutletContext()
     const [error, setError] = useState(false)
     const navigate = useNavigate()
 
@@ -24,8 +24,11 @@ function Login() {
         })
         .then(r => {
             if(r.ok) {
-                setIsLoggedIn(true)
-                navigate('/dashboard')
+                r.json().then((data) => {
+                    setIsLoggedIn(true)
+                    setUser(data)
+                    navigate('/dashboard')
+                })
             }
             else {
                 r.json()

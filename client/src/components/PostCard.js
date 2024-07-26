@@ -13,13 +13,14 @@ function PostCard({post}) {
     
     if(img_url){
         return (
-            <div className="card card-side bg-base-100 shadow-xl border-solid">
+            <div className="card card-side bg-base-100 shadow-xl border-solid p-0 max-w-sm">
                 <figure>
                     <img
+                    className='max-w-screen-sm'
                     src={img_url}
                     alt="Image" />
                 </figure>
-                <div className="card-body">
+                <div className="card-body max-w-screen-sm">
                     <h2 className="card-title">{title}</h2>
                     <p>{created}</p>
                     <p>{body}</p>

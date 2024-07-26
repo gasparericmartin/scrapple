@@ -34,10 +34,11 @@ function Dashboard() {
                 {userSearches ? 
                 userSearches.map((search) => <SearchCard search={search} key={search.id}/>)
                 : <h1>Loading searches</h1>}
-                
-                {posts ?
-                posts.map((post) => <PostCard key={post.id} post={post} />)
-                : <h1>Loading posts</h1>}
+                <div className='flex flex-wrap justify-center mt-0 p-4'>
+                    {posts ?
+                    posts.map((post) => <PostCard key={post.id} post={post} />)
+                    : <h1>Loading posts</h1>}
+                </div>
             </>
         )
 
