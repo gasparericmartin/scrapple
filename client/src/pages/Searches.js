@@ -10,7 +10,7 @@ function Searches() {
     const {user} = useOutletContext()
     const [searchDetail, setSearchDetail] = useState(null)
     const [viewComments, setViewComments] = useState(null)
-    
+    console.log(`In Searches:`, searches)
     useEffect(() => {
         fetch('/searches')
         .then(r => {
@@ -78,7 +78,9 @@ function Searches() {
                             user={user}
                             viewComments={viewComments}
                             setViewComments={setViewComments}
-                            handleAddComment={handleAddComment}/>: null}
+                            handleAddComment={handleAddComment}
+                            searches={searches}
+                            setSearches={setSearches}/>: null}
             
             
             <div className='overflow-x-hidden grow justify-end'>
@@ -96,7 +98,7 @@ function Searches() {
                                                     key={search.id}
                                                     search={search}
                                                     handleRowClick={handleRowClick}/>)
-                        : <p>No Searches</p>}
+                        : <tr><td>No Searches</td></tr>}
                     </tbody>
                 </table>
             </div>
