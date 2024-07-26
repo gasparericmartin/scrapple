@@ -1,7 +1,15 @@
+import AddCommentForm from './AddCommentForm'
 import CommentCard from './CommentCard'
+import { useState } from 'react'
 
-function SearchDetailCard({search, user, viewComments, setViewComments}) {
+function SearchDetailCard({
+                        search, 
+                        user, 
+                        viewComments, 
+                        setViewComments,
+                        handleAddComment}) {
     const userSearchIds = user.searches.map((search) => search.id)
+    const [showCommentForm, setShowCommentForm] = useState(false)
 
     return (
     <div className='grid place-items-center'>
@@ -17,7 +25,10 @@ function SearchDetailCard({search, user, viewComments, setViewComments}) {
                                                         comment={comment} 
                                                         user={user}/>)}
             </ul> 
-            <button className='btn btn-sm'>Add Comment</button> 
+            <button className='btn btn-sm'
+            onClick={() => setShowCommentForm(!showCommentForm)}>Add Comment
+            </button> 
+            {showCommentForm ? <AddCommentForm handleSubmit={handleAddComment}/> : null}
         </div>
         : null}
         {userSearchIds.includes(search.id)?
