@@ -28,7 +28,9 @@ function SearchDetailCard({
             <button className='btn btn-sm'
             onClick={() => setShowCommentForm(!showCommentForm)}>Add Comment
             </button> 
-            {showCommentForm ? <AddCommentForm handleSubmit={handleAddComment}/> : null}
+            {showCommentForm ? <AddCommentForm 
+                                handleSubmit={handleAddComment}
+                                search={search}/> : null}
         </div>
         : null}
         {userSearchIds.includes(search.id)?

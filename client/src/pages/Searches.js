@@ -35,6 +35,41 @@ function Searches() {
         }
     }
 
+    function handleAddComment(values, search) {
+        const postObj = {
+            body: values.comment,
+            search_id: search.id,
+        }
+        console.log(values)
+        console.log(search)
+
+        fetch('/comments', {
+            method: 'POST',
+            headers: {
+                'content-type': 'application/json'
+            },
+            body: JSON.stringify(postObj)
+        })
+        .then(r => {
+            if(r.ok) {
+                r.json().then((newComment) => {
+                    setSearches(
+                        searches.map((search) => {
+                        if(search.id !== newComment.search_id) {
+                            return search
+                        }
+                        else {
+                            search.comments = [...search.comments, newComment]
+                            return search
+                        }
+                        }
+                    )
+                )})
+                    
+            }
+        })
+    }
+
     return (
         <div className='p-4 content-center'>
             
@@ -42,7 +77,8 @@ function Searches() {
                             search={searchDetail} 
                             user={user}
                             viewComments={viewComments}
-                            setViewComments={setViewComments}/>: null}
+                            setViewComments={setViewComments}
+                            handleAddComment={handleAddComment}/>: null}
             
             
             <div className='overflow-x-hidden grow justify-end'>

@@ -2,7 +2,7 @@ import {Formik, Form, Field} from 'formik'
 import * as Yup from 'yup'
 import { useState } from 'react'
 
-function AddCommentForm({handleSubmit}) {
+function AddCommentForm({handleSubmit, search}) {
     const [error, setError] = useState(false)
     
     return (
@@ -13,12 +13,12 @@ function AddCommentForm({handleSubmit}) {
                 comment: ''
             }}
             validationSchema={Yup.object().shape({
-                bike: Yup.string()
+                comment: Yup.string()
                     .max(140, 'Must be 140 characters or less')
                     .required('Required')
             })}
             onSubmit={(values, props, initialValues) => {
-                handleSubmit(values)
+                handleSubmit(values, search)
                 props.resetForm(initialValues)
             }}
         >
