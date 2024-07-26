@@ -139,6 +139,25 @@ class SearchesByUser(Resource):
         except Exception as exc:
             return {'Error': f'{exc}'}, 400
 
+class Comments(Resource):
+    @login_required
+    def post(self):
+
+        try:
+            new_comment = Comment(
+                body = request.json['body'],
+                search_id = request.json['search_id'],
+                user_id = current_user.id
+            )
+
+            db.session.add(new_comment)
+            db.session.commit()
+
+            return new_comment.to_dict(), 201
+        
+        except Exception as exc:
+            pass
+
 api.add_resource(Home, '/home')
 api.add_resource(Signup, '/signup')
 api.add_resource(Login, '/login')
@@ -147,6 +166,7 @@ api.add_resource(CheckSession, '/checksession')
 api.add_resource(PostsBySearchIds, '/posts')
 api.add_resource(Searches, '/searches')
 api.add_resource(SearchesByUser, '/searches-by-user')
+api.add_resource(Comments, '/comments')
 
 
 if __name__ == '__main__':
