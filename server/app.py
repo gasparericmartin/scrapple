@@ -160,15 +160,21 @@ class Comments(Resource):
             pass
 
 class Scrape(Resource):
+    @login_required
     def post(self):
-        # search = Search.query.filter_by(id=request.json['search_id']).first()
-        search = Search.query.filter_by(id=1).first()
-        raw_posts = scrape('peach')
+        
+        search = Search.query.filter_by(id=request.json['search_id']).first()
+        raw_posts = scrape(
+            search_terms = request.json['search_terms'],
+            limit = request.json['limit'],
+            reddit_id = request.json['reddit_id'],
+            before_after = request.json['before_after']
+        )
         new_posts = []
-
+        
         if raw_posts:
             for post in raw_posts:
-                if not Post.query.filter_by(reddit_id=post['full_name']):
+                if not Post.query.filter_by(reddit_id=post['full_name']).first():
                     new_post = Post(
                     reddit_id = post['full_name'],
                     created = parse(post['date_time']),

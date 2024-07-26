@@ -45,7 +45,6 @@ def scrape(search_terms, limit=100, reddit_id=None, before_after=None):
         post_obj['post_title'] = result.select('.search-title')[0].text
         post_obj['post_link'] = result.select('.search-title')[0].get('href')
         
-        ##Not always an image link
         if result.select('.search-link') and (
         result.select('.search-link')[0].get('href').endswith(img_extensions)            
         ):
