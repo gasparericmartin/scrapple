@@ -15,6 +15,10 @@ flask-cors = "*"
 faker = "*"
 bs4 = "*"
 requests = "*"
+flask-login = "*"
+bcrypt = "*"
+passlib = "*"
+python-dateutil = "*"
 
 [requires]
 python_full_version = "3.8.13"
