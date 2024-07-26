@@ -31,7 +31,7 @@ class Post(db.Model, SerializerMixin):
     )
 
     id = db.Column(db.Integer, primary_key=True)
-    reddit_id = db.Column(db.String, nullable=False)
+    reddit_id = db.Column(db.String, nullable=False, unique=True)
     created = db.Column(db.DateTime, nullable=False)
     title = db.Column(db.String, nullable=False)
     url = db.Column(db.String, nullable=False)

@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 
 from models import *
-from scraper import *
+from scraper import scrape, get_data
 from flask import request, session
 from flask_restful import Resource
 from config import app, db, api, login_manager
 from flask_login import login_required, current_user,login_user ,logout_user
 from sqlalchemy import func
+from dateutil.parser import *
 import datetime
 import sys
 
@@ -158,6 +159,41 @@ class Comments(Resource):
         except Exception as exc:
             pass
 
+class Scrape(Resource):
+    def post(self):
+        # search = Search.query.filter_by(id=request.json['search_id']).first()
+        search = Search.query.filter_by(id=1).first()
+        raw_posts = scrape('peach')
+        new_posts = []
+
+        if raw_posts:
+            for post in raw_posts:
+                if not Post.query.filter_by(reddit_id=post['full_name']):
+                    new_post = Post(
+                    reddit_id = post['full_name'],
+                    created = parse(post['date_time']),
+                    title = post['post_title'],
+                    url = post['post_link'],
+                    img_url = post['post_img'],
+                    body = post['post_body']  
+                    )
+                    new_posts.append(new_post)
+                
+            db.session.add_all(new_posts)
+            db.session.commit()
+            
+            search.posts.extend(new_posts)
+            db.session.commit()
+            
+            new_posts_dict = [post.to_dict() for post in new_posts]
+            
+            if len(new_posts_dict) == 0:
+                return {'message': 'No new posts'}, 204
+            
+            return new_posts_dict, 200    
+    
+
+
 api.add_resource(Home, '/home')
 api.add_resource(Signup, '/signup')
 api.add_resource(Login, '/login')
@@ -167,6 +203,7 @@ api.add_resource(PostsBySearchIds, '/posts')
 api.add_resource(Searches, '/searches')
 api.add_resource(SearchesByUser, '/searches-by-user')
 api.add_resource(Comments, '/comments')
+api.add_resource(Scrape, '/scrape')
 
 
 if __name__ == '__main__':
