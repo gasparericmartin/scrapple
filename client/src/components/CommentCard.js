@@ -1,10 +1,11 @@
-function CommentCard({comment, user}) {
+function CommentCard({comment, user, handleCommentDelete}) {
         
     return (
         <>
             <li>{comment.body}</li>
             {comment.user_id === user.id ? 
-            <button className='btn btn-sm'>Delete Comment</button>
+            <button onClick={() => handleCommentDelete(comment)} 
+            className='btn btn-sm'>Delete Comment</button>
             : null}
         </>
     )

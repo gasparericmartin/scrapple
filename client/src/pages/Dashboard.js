@@ -1,15 +1,16 @@
-import { useOutletContext, Navigate, redirect } from "react-router-dom"
+import { useOutletContext, useNavigate, redirect } from "react-router-dom"
 import { useState, useEffect } from "react"
 import SearchCard from '../components/SearchCard'
 import PostCard from '../components/PostCard'
 import NewSearchForm from '../components/NewSearchForm'
 
 function Dashboard() {
+    const navigate = useNavigate()
     const {isLoggedIn, setIsLoggedIn, user} = useOutletContext()
     const [userSearches, setUserSearches] = useState([])
     const [posts, setPosts] = useState([])
     const [showNewSearch, setShowNewSearch] = useState(false)
-
+    
     useEffect(() => {
         fetch('/searches-by-user')
         .then(r => {
@@ -27,26 +28,39 @@ function Dashboard() {
         
     }, [])
 
+    function handleUpdateStates(rData) {
+        setUserSearches(userSearches.map((search) => {
+            if (search.id !== rData.search.id) {
+                return search
+            }
+            else {
+                return rData.search
+            }
+        }))
+
+        setPosts([...posts, rData.posts])
+    }
+
     
 
     if(isLoggedIn){
         return(
             <>
-                <h1 className='pb-12'>Welcome {user.username}</h1>
+                <h1 className='pb-12' key={Date.now().toString(36) + Math.floor(Math.pow(10, 12) + Math.random() * 9*Math.pow(10, 12)).toString(36)}
+                >Welcome {user.username}</h1>
                     {userSearches ? 
                     userSearches.map((search) => <SearchCard 
-                    search={search}
-                    userSearches={userSearches}
-                    setUserSearches={setUserSearches} 
+                    search={search} 
                     key={search.id}
-                    posts={posts}
-                    setPosts={setPosts}/>)
-                    : <h1>Loading searches</h1>}
+                    handleUpdateStates={handleUpdateStates}/>)
+                    : <h1 key={Date.now().toString(36) + Math.floor(Math.pow(10, 12) + Math.random() * 9*Math.pow(10, 12)).toString(36)}
+                    >Loading searches</h1>}
                 
-                <button className='btn btn-sm btn-primary'
+                <button className='btn btn-sm btn-primary' 
                 onClick={() => setShowNewSearch(!showNewSearch)}>New Search</button>
-                <div>
+                <div key={46585}>
                     {showNewSearch ? <NewSearchForm user={user}
+                                                    key={Date.now().toString(36) + Math.floor(Math.pow(10, 12) + Math.random() * 9*Math.pow(10, 12)).toString(36)}
                                                     userSearches={userSearches}
                                                     setUserSearches={setUserSearches}/> : null}
                 </div>
@@ -61,9 +75,7 @@ function Dashboard() {
     }
     else{
         return (
-            <h1>Loading</h1>
-            
-            
+            <h1>Not yet logged in</h1>
         )
     }
 }

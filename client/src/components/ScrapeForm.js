@@ -5,12 +5,8 @@ import * as Yup from 'yup'
 function ScrapeForm({search, 
                     showForm, 
                     setShowForm, 
-                    posts, 
-                    setPosts,
-                    userSearches,
-                    setUserSearches}) {    
+                    handleUpdateStates}) {    
     const [error, setError] = useState(null)
-    
 
     function handleSubmit(values, search) {
         let reddit_id = ''
@@ -56,16 +52,7 @@ function ScrapeForm({search,
         })
         .then(r => {
             if(r.ok){
-                r.json().then((data) => {setPosts([...posts, data.posts])})
-                // console.log(userSearches)
-                // setUserSearches(userSearches.map((search) => {
-                //     if (search.id !== data.seach.id) {
-                //         return search
-                //     }
-                //     else {
-                //         return data.search
-                //     }
-                // }))
+                r.json().then((data) => handleUpdateStates(data))
             }
             else {
                 r.json().then((data) => console.log(data.error))

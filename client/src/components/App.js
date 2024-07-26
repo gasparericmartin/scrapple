@@ -27,7 +27,8 @@ function App() {
               setIsLoggedIn={setIsLoggedIn}
               user={user}
               setUser={setUser}/>
-      <Outlet context={{isLoggedIn, 
+      <Outlet key={Date.now().toString(36) + Math.floor(Math.pow(10, 12) + Math.random() * 9*Math.pow(10, 12)).toString(36)}
+              context={{isLoggedIn, 
               setIsLoggedIn, 
               user,
               setUser}}/>  

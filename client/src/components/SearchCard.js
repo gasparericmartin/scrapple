@@ -1,10 +1,15 @@
 import { useState } from "react"
 import ScrapeForm from './ScrapeForm'
 
-function SearchCard({search, posts, setPosts, userSearches, setUserSearches}) {
+function SearchCard({search, 
+                    posts, 
+                    setPosts, 
+                    userSearches, 
+                    setUserSearches,
+                    handleUpdateStates}) {
     const [showForm, setShowForm] = useState(false)
     const search_terms = search.search_terms.replace('+', ' ')
-    
+
     function handleShowForm(e) {
         setShowForm(!showForm)
     }
@@ -26,10 +31,7 @@ function SearchCard({search, posts, setPosts, userSearches, setUserSearches}) {
                             search={search} 
                             showForm={showForm}
                             setShowForm={setShowForm} 
-                            posts={posts}
-                            setPosts={setPosts}
-                            userSeraches={userSearches}
-                            setUserSearches={setUserSearches}/> : null}
+                            handleUpdateStates={handleUpdateStates}/> : null}
         </div>
             
     
