@@ -1,6 +1,9 @@
 import { useState, useEffect } from "react"
 import SearchTableRow from "../components/SearchTableRow"
 import { useOutletContext } from "react-router-dom"
+import SearchDetailCard from '../components/SearchDetailCard'
+import Formik from 'formik'
+import * as Yup from 'yup'
 
 function Searches() {
     const [searches, setSearches] = useState([])
@@ -21,7 +24,6 @@ function Searches() {
     }, [])
 
     function handleRowClick(search) {
-        //Setting search here for some reason puts it in a dictionary?
         if(!searchDetail) {
             setSearchDetail(search)
         }
@@ -33,52 +35,14 @@ function Searches() {
         }
     }
 
-    function CommentCard({comment, user}) {
-        
-        return (
-            <>
-                <li>{comment.body}</li>
-                {comment.user_id === user.id ? 
-                <button className='btn btn-sm'>Delete Comment</button>
-                : null}
-            </>
-        )
-    }
-
-    function SearchDetailCard(search) {
-        const userSearchIds = user.searches.map((search) => search.id)
-
-        return (
-        <div className='grid place-items-center'>
-            <h1 className='font-bold'>{search.search.title}</h1>
-            <p>{search.search.search_terms.replace('+', ',')}</p>
-            <button className='btn btn-sm'
-            onClick={() => setViewComments(!viewComments)}>View Comments</button>
-            {viewComments ?
-            <div>
-                <ul>
-                {search.search.comments.map((comment) => <CommentCard 
-                                                            key={comment.id} 
-                                                            comment={comment} 
-                                                            user={user}/>)}
-                </ul> 
-                <button className='btn btn-sm'>Add Comment</button> 
-            </div>
-            : null}
-            {userSearchIds.includes(search.search.id)?
-            <button className='btn btn-sm'>Remove</button>
-            :
-            <button className='btn btn-sm'>Add</button>
-            }
-        </div>
-
-        )
-    }
-
     return (
         <div className='p-4 content-center'>
             
-            {searchDetail ? <SearchDetailCard search={searchDetail}/>: null}
+            {searchDetail ? <SearchDetailCard 
+                            search={searchDetail} 
+                            user={user}
+                            viewComments={viewComments}
+                            setViewComments={setViewComments}/>: null}
             
             
             <div className='overflow-x-hidden grow justify-end'>
