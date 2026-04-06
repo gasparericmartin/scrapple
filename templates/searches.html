@@ -1,0 +1,166 @@
+{% extends 'base.html' %}
+
+{% block title %}Scrapple - Searches{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h2>Searches</h2>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">New Search</h5>
+            </div>
+            <div class="card-body">
+                <form method="post" action="{% url 'searches' %}">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Title</label>
+                        <input type="text" class="form-control" id="title" name="title" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="search_terms" class="form-label">Search Terms</label>
+                        <input type="text" class="form-control" id="search_terms" name="search_terms" 
+                               placeholder="Enter terms separated by commas">
+                        <div class="form-text">Example: bitcoin, crypto, ethereum</div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Create Search</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row row-cols-1 gap-3">
+    {% for search in searches %}
+    <div class="card">
+        <div class="card-body d-flex justify-content-between align-items-center">
+            <div>
+                <h5 class="card-title mb-1">{{ search.title }}</h5>
+                <p class="card-text text-muted small mb-0">Terms: {{ search.search_terms|join:", " }}</p>
+            </div>
+            <!-- <div class="d-flex gap-2">
+                <a href="{% url 'home' %}?search_id={{ search.id }}" class="btn btn-outline-primary btn-sm">View Posts</a>
+                <a href="{% url 'home' %}?search_id={{ search.id }}" class="btn btn-outline-primary btn-sm">View Posts</a>
+                <form method="post" action="{% url 'search_delete' search.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline-danger btn-sm">Delete</button>
+                </form>
+            </div>
+        </div> -->
+            <div class="d-flex gap-2">
+                <a href="{% url 'home' %}?search_id={{ search.id }}" class="btn btn-outline-primary btn-sm">View Posts</a>
+                <button 
+                    class="btn btn-outline-success btn-sm scrape-btn"
+                    data-id="{{ search.id }}"
+                    data-terms="{{ search.search_terms|join:',' }}">
+                    Scrape
+                </button>
+                <form method="post" action="{% url 'search_delete' search.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline-danger btn-sm">Delete</button>
+                </form>
+            </div>
+    </div>
+    {% empty %}
+        <p class="text-muted">No searches yet. Create one above!</p>
+    {% endfor %}
+</div>
+
+<!-- <script>
+function getCSRFToken() {
+    return document.querySelector('[name=csrfmiddlewaretoken]').value;
+}
+
+function triggerScrape(searchId, searchTerms) {
+    fetch('/api/scrape/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCSRFToken()
+        },
+        body: JSON.stringify({
+            search_id: searchId,
+            search_terms: searchTerms.split(','),
+            limit: 10,
+            reddit_id: null,
+            before_after: 'after'
+        })
+    })
+    .then(res => {
+        if (!res.ok) {
+            throw new Error('Scrape failed');
+        }
+        return res.json();
+    })
+    .then(data => {
+        console.log('Scrape result:', data);
+        alert('Scrape complete!');
+    })
+    .catch(err => {
+        console.error(err);
+        alert('Error running scrape');
+    });
+}
+</script> -->
+<script>
+function getCSRFToken() {
+    const el = document.querySelector('[name=csrfmiddlewaretoken]');
+    return el ? el.value : '';
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+
+    const buttons = document.querySelectorAll('.scrape-btn');
+
+    buttons.forEach(button => {
+        button.addEventListener('click', function () {
+
+            const searchId = this.dataset.id;
+            const rawTerms = this.dataset.terms || '';
+
+            const searchTerms = rawTerms
+                .split(',')
+                .map(t => t.trim())
+                .filter(Boolean);
+
+            fetch('http://120.0.0.1:8000/api/scrape/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCSRFToken()
+                },
+                body: JSON.stringify({
+                    search_id: searchId,
+                    search_terms: searchTerms,
+                    limit: 10,
+                    reddit_id: null,
+                    before_after: 'after'
+                })
+            })
+            .then(res => {
+                if (!res.ok) {
+                    throw new Error('Scrape failed');
+                }
+                return res.json();
+            })
+            .then(data => {
+                console.log('Scrape result:', data);
+                alert('Scrape complete!');
+            })
+            .catch(err => {
+                console.error('Scrape error:', err);
+                alert('Error running scrape');
+            });
+
+        });
+    });
+
+});
+</script>
+{% endblock %}
+

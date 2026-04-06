@@ -5,10 +5,14 @@ from .models import Search, Post
 from .serializers import SearchSerializer, PostSerializer
 from scraper import scrape
 from dateutil.parser import parse
+from django.shortcuts import render, redirect
+from django.core.paginator import Paginator
+import pdb
 
 
 class SearchList(APIView):
     def get(self, request):
+        pdb.set_trace()
         searches = Search.objects.all()
         serializer = SearchSerializer(searches, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -100,3 +104,47 @@ class ScrapeView(APIView):
             }, status=status.HTTP_200_OK)
 
         return Response({'error': 'Scrape returned no results'}, status=status.HTTP_400_BAD_REQUEST)
+
+class HomeView(APIView):
+    def get(self, request):
+        searches = Search.objects.all()
+        search_id = request.query_params.get('search_id')
+        
+        if search_id:
+            posts = Post.objects.filter(searches__id=search_id).order_by('-created')
+        else:
+            posts = Post.objects.all().order_by('-created')
+        
+        paginator = Paginator(posts, 25)
+        page_number = request.query_params.get('page')
+        page_obj = paginator.get_page(page_number)
+        
+        return render(request, 'home.html', {
+            'searches': searches,
+            'page_obj': page_obj,
+            'selected_search_id': int(search_id) if search_id else None
+        })
+
+
+class SearchesView(APIView):
+    def get(self, request):
+        searches = Search.objects.all()
+        return render(request, 'searches.html', {'searches': searches})
+    
+    def post(self, request):
+        title = request.data.get('title')
+        search_terms = [term.strip() for term in request.data.get('search_terms').split(',')]
+        
+        if title and search_terms:
+            Search.objects.create(
+                title=title,
+                search_terms=search_terms
+            )
+        return redirect('searches')
+    
+class SearchDeleteView(APIView):
+    def post(self, request, id):
+        search = Search.objects.filter(id=id).first()
+        if search:
+            search.delete()
+        return redirect('searches')

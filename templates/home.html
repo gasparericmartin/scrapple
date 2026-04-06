@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block title %}Scrapple - Feed{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h2>Feed</h2>
+    </div>
+    <div class="col-auto">
+        <form method="get" action="{% url 'home' %}" class="d-flex gap-2">
+            <select name="search_id" class="form-select">
+                <option value="">All Searches</option>
+                {% for search in searches %}
+                    <option value="{{ search.id }}" {% if search.id == selected_search_id %}selected{% endif %}>
+                        {{ search.title }}
+                    </option>
+                {% endfor %}
+            </select>
+            <button type="submit" class="btn btn-primary">Filter</button>
+        </form>
+    </div>
+</div>
+
+<div class="row row-cols-1 gap-3">
+    {% for post in page_obj %}
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">
+                <a href="{{ post.url }}" target="_blank">{{ post.title }}</a>
+            </h5>
+            <p class="card-text text-muted small">{{ post.created }}</p>
+            {% if post.img_url %}
+                <img src="{{ post.img_url }}" class="img-fluid mb-2" alt="Post image">
+            {% endif %}
+            {% if post.body %}
+                <p class="card-text">{{ post.body }}</p>
+            {% endif %}
+        </div>
+    </div>
+    {% empty %}
+        <p class="text-muted">No posts found. Go to Searches to run a scrape!</p>
+    {% endfor %}
+</div>
+
+<div class="mt-4 d-flex justify-content-center gap-2">
+    {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}{% if selected_search_id %}&search_id={{ selected_search_id }}{% endif %}" 
+           class="btn btn-outline-primary">Previous</a>
+    {% endif %}
+    <span class="btn disabled">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}{% if selected_search_id %}&search_id={{ selected_search_id }}{% endif %}" 
+           class="btn btn-outline-primary">Next</a>
+    {% endif %}
+</div>
+{% endblock %}
