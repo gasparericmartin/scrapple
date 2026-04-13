@@ -13,10 +13,13 @@ Reddit doesn't natively support creating a customized feed of only search result
 
 Whether you're researching niche communities, monitoring specific topics, or building a personalized news feed, Scrapple puts you in control.
 
+## How it Started
+
+Scrapple was originally a bootcamp final project. Since then I decided to do a complete overhaul of the app and migrate to Django. My hope is that people find it useful, and that it can fill a gap that Reddit has left in it's user interface.
+
 ## Features
 
 - **Search Management**: Create and manage multiple saved searches
-- **Reddit Scraping**: Extract posts from specific subreddits or across all of Reddit
 - **Post Feed**: Browse scraped posts in a clean, paginated interface
 - **Filtering**: Filter the feed by search or view all posts
 - **Self-Hosted**: Run everything locally or on your own server—no third-party accounts needed
@@ -24,7 +27,7 @@ Whether you're researching niche communities, monitoring specific topics, or bui
 
 ## Future Plans
 
-We're actively working on:
+- **Reddit Scraping**: Extract posts from specific subreddits or across all of Reddit
 - **Timed Updates**: Automatically run scrapes on a schedule you set (hourly, daily, weekly, etc.)
 - **Enhanced UI**: Richer features for managing and exploring your feeds
 - **Modern Frontend**: A new React-based interface for a better user experience
