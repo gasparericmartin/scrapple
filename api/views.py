@@ -7,12 +7,10 @@ from scraper import scrape
 from dateutil.parser import parse
 from django.shortcuts import render, redirect
 from django.core.paginator import Paginator
-import pdb
 
 
 class SearchList(APIView):
     def get(self, request):
-        pdb.set_trace()
         searches = Search.objects.all()
         serializer = SearchSerializer(searches, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)

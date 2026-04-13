@@ -43,15 +43,6 @@
                 <h5 class="card-title mb-1">{{ search.title }}</h5>
                 <p class="card-text text-muted small mb-0">Terms: {{ search.search_terms|join:", " }}</p>
             </div>
-            <!-- <div class="d-flex gap-2">
-                <a href="{% url 'home' %}?search_id={{ search.id }}" class="btn btn-outline-primary btn-sm">View Posts</a>
-                <a href="{% url 'home' %}?search_id={{ search.id }}" class="btn btn-outline-primary btn-sm">View Posts</a>
-                <form method="post" action="{% url 'search_delete' search.id %}">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-outline-danger btn-sm">Delete</button>
-                </form>
-            </div>
-        </div> -->
             <div class="d-flex gap-2">
                 <a href="{% url 'home' %}?search_id={{ search.id }}" class="btn btn-outline-primary btn-sm">View Posts</a>
                 <button 
@@ -71,42 +62,6 @@
     {% endfor %}
 </div>
 
-<!-- <script>
-function getCSRFToken() {
-    return document.querySelector('[name=csrfmiddlewaretoken]').value;
-}
-
-function triggerScrape(searchId, searchTerms) {
-    fetch('/api/scrape/', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': getCSRFToken()
-        },
-        body: JSON.stringify({
-            search_id: searchId,
-            search_terms: searchTerms.split(','),
-            limit: 10,
-            reddit_id: null,
-            before_after: 'after'
-        })
-    })
-    .then(res => {
-        if (!res.ok) {
-            throw new Error('Scrape failed');
-        }
-        return res.json();
-    })
-    .then(data => {
-        console.log('Scrape result:', data);
-        alert('Scrape complete!');
-    })
-    .catch(err => {
-        console.error(err);
-        alert('Error running scrape');
-    });
-}
-</script> -->
 <script>
 function getCSRFToken() {
     const el = document.querySelector('[name=csrfmiddlewaretoken]');
@@ -128,7 +83,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 .map(t => t.trim())
                 .filter(Boolean);
 
-            fetch('http://120.0.0.1:8000/api/scrape/', {
+            fetch('http://127.0.0.1:8000/api/scrape/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
